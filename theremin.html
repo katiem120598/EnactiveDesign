@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leap Motion Theremin</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+  <script>
+    let socket = new WebSocket("ws://localhost:8765");
+
+    let osc;
+
+    // Setup function for p5.js
+    function setup() {
+      createCanvas(400, 400);
+      osc = new p5.Oscillator('sine');
+      osc.start();
+      osc.amp(0.5);
+    }
+
+    // Function to map coordinates to sound frequencies
+    function mapCoordinatesToSound(x, y, z) {
+  // Ensure the coordinates are finite numbers before mapping
+  if (isFinite(x) && isFinite(y) && isFinite(z)) {
+    // Map hand x coordinate to frequency (set limits to a reasonable range)
+    let freq = map(x, -200, 200, 200, 800);
+    osc.freq(freq);
+
+    // Map hand y coordinate to amplitude (set limits to a reasonable range)
+    let amp = map(y, -200, 200, 0.1, 1);
+    osc.amp(amp);
+  } else {
+    console.error("Received non-finite values for hand coordinates:", { x, y, z });
+  }
+}
+
+socket.onmessage = function(event) {
+  let hands = JSON.parse(event.data);
+  
+  // Check if we received valid hand data
+  if (hands && hands.length > 0) {
+    // For now, just use the first hand detected
+    let hand = hands[0];
+    mapCoordinatesToSound(hand.x, hand.y, hand.z);
+  } else {
+    console.error("No valid hand data received.");
+  }
+};
+
+
+    function draw() {
+      background(220);
+    }
+  </script>
+</body>
+</html>
