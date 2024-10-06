@@ -6,54 +6,157 @@
   <title>Leap Motion Theremin</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+  <style>
+    body {
+      font-family: 'Work Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: black;
+      color: white;
+    }
+
+    .fullcontainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .pinkcontainer {
+      background-color: #1f1f1f;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #ff4081;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    form {
+      display: grid;
+      grid-gap: 20px;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    input[type="text"]:focus {
+      border-color: #ff4081;
+      outline: none;
+    }
+
+    .submit-btn {
+      background-color: #ff4081;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      text-transform: uppercase;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: #e0336d;
+    }
+
+    .status-message {
+      font-style: italic;
+      color: #ff4081;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-  <script>
-    let socket = new WebSocket("ws://localhost:8765");
 
-    let osc;
+  <body class="fullcontainer">
 
-    // Setup function for p5.js
-    function setup() {
-      createCanvas(400, 400);
-      osc = new p5.Oscillator('sine');
-      osc.start();
-      osc.amp(0.5);
-    }
-
-    // Function to map coordinates to sound frequencies
-    function mapCoordinatesToSound(x, y, z) {
-  // Ensure the coordinates are finite numbers before mapping
-  if (isFinite(x) && isFinite(y) && isFinite(z)) {
-    // Map hand x coordinate to frequency (set limits to a reasonable range)
-    let freq = map(x, -200, 200, 200, 800);
-    osc.freq(freq);
-
-    // Map hand y coordinate to amplitude (set limits to a reasonable range)
-    let amp = map(y, -200, 200, 0.1, 1);
-    osc.amp(amp);
-  } else {
-    console.error("Received non-finite values for hand coordinates:", { x, y, z });
-  }
-}
-
-socket.onmessage = function(event) {
-  let hands = JSON.parse(event.data);
-  
-  // Check if we received valid hand data
-  if (hands && hands.length > 0) {
-    // For now, just use the first hand detected
-    let hand = hands[0];
-    mapCoordinatesToSound(hand.x, hand.y, hand.z);
-  } else {
-    console.error("No valid hand data received.");
-  }
-};
-
-
-    function draw() {
-      background(220);
-    }
-  </script>
+    <div id="main" class="pinkcontainer">
+    
+      <!-- Header -->
+      <h1>Music Creator</h1>
+    
+      <!-- Form Section -->
+      <div class="horizontal-center">
+        <form id="midi-form">
+          <script>
+            let socket = new WebSocket("ws://localhost:8765");
+        
+            let osc;
+        
+            // Setup function for p5.js
+            function setup() {
+              createCanvas(400, 400);
+              osc = new p5.Oscillator('sine');
+              osc.start();
+              osc.amp(0.5);
+            }
+        
+            // Function to map coordinates to sound frequencies
+            function mapCoordinatesToSound(x, y, z) {
+          // Ensure the coordinates are finite numbers before mapping
+          if (isFinite(x) && isFinite(y) && isFinite(z)) {
+            // Map hand x coordinate to frequency (set limits to a reasonable range)
+            let freq = map(x, -200, 200, 200, 800);
+            osc.freq(freq);
+        
+            // Map hand y coordinate to amplitude (set limits to a reasonable range)
+            let amp = map(y, -200, 200, 0.1, 1);
+            osc.amp(amp);
+          } else {
+            console.error("Received non-finite values for hand coordinates:", { x, y, z });
+          }
+        }
+        
+        socket.onmessage = function(event) {
+          let hands = JSON.parse(event.data);
+          
+          // Check if we received valid hand data
+          if (hands && hands.length > 0) {
+            // For now, just use the first hand detected
+            let hand = hands[0];
+            mapCoordinatesToSound(hand.x, hand.y, hand.z);
+          } else {
+            console.error("No valid hand data received.");
+          }
+        };
+        
+        
+            function draw() {
+              background(220);
+            }
+          </script>
+    
+          <!-- Submit Button -->
+          <!--button type="button" id="button-request" class="submit-btn">Submit Request</button-->
+    
+          <!-- Request Status -->
+          <div id="request-status" class="status-message">No Request</div>
+        </form>
+      </div>
+    
+    </div>
 </body>
 </html>
