@@ -70,7 +70,7 @@ reqbut.onclick = function () {
         });
 };
 
-// Function to play 10 notes in sequence using one oscillator
+
 // Function to play 10 notes in sequence using one oscillator
 function playMidiNotes(allNotes) {
     let i = 0;
