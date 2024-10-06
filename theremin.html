@@ -65,7 +65,7 @@
       outline: none;
     }
 
-    .submit-btn {
+    .startBtn, .playBtn {
       background-color: #ff4081;
       color: white;
       padding: 12px;
@@ -78,7 +78,7 @@
       transition: background-color 0.3s ease;
     }
 
-    .submit-btn:hover {
+    .startBtn:hover, .playBtn:hover {
       background-color: #e0336d;
     }
 
@@ -148,11 +148,11 @@
               background(220);
             }
           </script>
+          <button id="startBtn">Start</button>
+          <button id="playBtn" disabled>Play Recording</button>
     
           <!-- Submit Button -->
           <!--button type="button" id="button-request" class="submit-btn">Submit Request</button-->
-    
-          <!-- Request Status -->
           <div id="request-status" class="status-message">No Request</div>
         </form>
       </div>
